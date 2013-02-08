@@ -1,6 +1,16 @@
-Elements that triggered the alert for "{{#patterns}} {{.}} {{/patterns}}"<br>
-
-{{#matches}}
-- <a href={{link}}>{{title}}</a> <br>
-{{/matches}}
+<div style="font-family: 'Comic Sans MS';">
+  Elements that triggered the alert for "{{#patterns}} {{.}} {{/patterns}}"<br>
+  
+  <br> <br>
+  {{#elements}}
+  - <a href="{{url}}">{{title}}</a> <br>
+    <span style="margin-left:20px;">In the following comments:  <span><br><br>
+    {{#matches}}
+    <div style="margin-left:40px;">
+      {{{comment}}} <br><br>
+    </div>
+    {{/matches}}
+    <br> <br> <br>
+  {{/elements}}
+</div>
 
