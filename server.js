@@ -52,7 +52,7 @@ function sendEmail (options, cb) {
 
 
 
-exec('phantomjs scraper.js', function (err, stdout, stderr) {
+exec('phantomjs HNFrontpageScraper.js', function (err, stdout, stderr) {
 
   var res = JSON.parse(stdout)
     , options
