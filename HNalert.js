@@ -17,7 +17,6 @@ exec('phantomjs lib/HNFrontpageScraper.js ' + patterns.join(' '), function (err,
     //, matches = output.matches 
     , matches
     , HNCommentPages = output.HNCommentPages;
-    console.log('Pages to scrape', HNCommentPages);
 
     async.mapLimit(
         HNCommentPages
