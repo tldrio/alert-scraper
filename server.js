@@ -6,8 +6,6 @@ var nodemailer = require('nodemailer')
   , redis = require('redis')
   , _ = require('underscore')
   , client = redis.createClient()
-  , jsdom = require('jsdom')
-  , request = require('request')
   , fs = require("fs")
   , jquery = fs.readFileSync("./jquery.js").toString()
   , smtpTransport
@@ -53,63 +51,31 @@ function sendEmail (options, cb) {
 };
 
 
-request('https://news.ycombinator.com', function (error, response, body) {
-  if (!error && response.statusCode === 200) {
-    jsdom.env({
-        html: body
-      //, scripts: ['http://code.jquery.com/jquery.js']
-      , src: [jquery]
-      , done: function (errors, window) {
-        var $ = window.$
-          , selection = $('.title > a')
-          , titles = _.pluck(selection, 'innerHTML')
-          , r = /Show HN:/i
-          , matches = []
-          , res
-          , title;
 
-          console.log('TITLE', titles);
-        _.each(selection, function (element) {
-          title = element.innerHTML;
-          res = title.match(r);
-          if (res) {
-            matches.push({ title: title, link: element.href });
-          }
-        });
+exec('phantomjs scraper.js', function (err, stdout, stderr) {
 
-        console.log(JSON.stringify(matches));
-          process.exit(0);
-      }
+  var res = JSON.parse(stdout)
+    , options
+    , valuesToSend = []
+    , toSend
+    , matches = res.matches;
+
+  client.hkeys('scraper matches', function (err, replies) {
+    toSend = _.difference(_.pluck(matches, 'title'), replies);
+    toSend.forEach( function (element, i) {
+      client.hset('scraper matches', element, JSON.stringify(matches[i]), redis.print);
+      valuesToSend.push(matches[i]);
     });
-  }
+
+    if (valuesToSend.length) {
+      options = { values: { matches: valuesToSend }
+                , type: 'alertScraper' }
+
+      sendEmail(options, function () {process.exit(0);})
+    } else {
+      console.log('Nothing to be noticed');
+      process.exit(0);
+    }
+  });
 });
-
-
-//exec('phantomjs scraper.js', function (err, stdout, stderr) {
-
-  //var res = JSON.parse(stdout)
-    //, options
-    //, valuesToSend = []
-    //, toSend;
-
-  //client.hkeys('scraper matches', function (err, replies) {
-    //toSend = _.difference(_.pluck(res, 'title'), replies);
-    //toSend.forEach( function (element, i) {
-      //client.hset('scraper matches', element, JSON.stringify(res[i]), redis.print);
-      //valuesToSend.push(res[i]);
-    //});
-
-    //if (valuesToSend.length) {
-      //options = { values: { matches: valuesToSend }
-                //, type: 'alertScraper' }
-
-      //sendEmail(options, function () {process.exit(0);})
-    //} else {
-
-      //console.log('Nothing to be noticed');
-      //process.exit(0);
-    //}
-  //});
-
-//});
 

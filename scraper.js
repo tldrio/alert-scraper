@@ -14,7 +14,7 @@ page.open('http://news.ycombinator.com', function () {
 
         var selection = $('.title > a')
           , titles = _.pluck(selection, 'innerHTML')
-          , r = /trello/i
+          , r = /hipchat/i
           , matches = []
           , res
           , title;
@@ -27,7 +27,7 @@ page.open('http://news.ycombinator.com', function () {
           }
         });
 
-        console.log(JSON.stringify(matches));
+        console.log(JSON.stringify({matches: matches}));
 
       });
       phantom.exit(0);
