@@ -1,15 +1,17 @@
-{ "name": "scraper"
-, "version": "1.0.0"
-, "main": "index.js"
-, "license": "BSD"
-, "description": "ERROR: No README.md file found!"
-, "dependencies" : {
+{
+  "name": "scraper",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "BSD",
+  "description": "ERROR: No README.md file found!",
+  "dependencies": {
     "nodemailer": "~0.3.35",
     "h4e": "~0.3.0",
     "redis": "~0.8.2",
-    "underscore": "~1.4.3"
-  }
-, "engines": {
+    "underscore": "~1.4.3",
+    "async": "~0.2.5"
+  },
+  "engines": {
     "node": "0.8.x",
     "npm": "1.1.x"
   }
