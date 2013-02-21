@@ -53,7 +53,7 @@ exec('phantomjs lib/HNFrontpageScraper.js ' + patterns.join(' '), function (err,
             toSend = _.difference(_.pluck(matches, 'url'), replies);
             console.log('Tosend', toSend);
             toSend.forEach( function (element, i) {
-              valuesToSend.push(matches[i]);
+              valuesToSend.push(_.findWhere(matches, { url: element }));
             });
 
             // Check if there is something to send
