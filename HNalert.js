@@ -25,6 +25,7 @@ exec('phantomjs lib/HNFrontpageScraper.js ' + patterns.join(' '), function (err,
       articles.push({ articleLink: articlePages[i], HNCommentLink: HNCommentPages[i] });
     };
 
+
     async.mapLimit(
         articles
       , MAX_PHANTOM_PROCESS
@@ -48,7 +49,7 @@ exec('phantomjs lib/HNFrontpageScraper.js ' + patterns.join(' '), function (err,
             });
           },
           function(cb){
-            exec('phantomjs lib/basicPageScraper.js ' + articleLink + ' ' + patterns.join(' '), function (err, stdout, stderr) {
+            exec('phantomjs lib/basicPageScraper.js ' + articleLink + ' ' + patterns.join(' '),{ timeout: 30000}, function (err, stdout, stderr) {
               if (err) {
                 console.log('[Article Page] STDOUT', stdout, 'stderr', stderr, err);
                 cb(null, { alertArticle: false , articleLink: articleLink});
