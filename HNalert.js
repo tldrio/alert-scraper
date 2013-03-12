@@ -52,7 +52,7 @@ exec('phantomjs lib/HNFrontpageScraper.js ' + patterns.join(' '), function (err,
             exec('phantomjs lib/basicPageScraper.js ' + articleLink + ' ' + patterns.join(' '), function (err, stdout, stderr) {
               if (err) {
                 console.log('[Article Page] STDOUT', stdout, 'stderr', stderr, err);
-                cb(err);
+                cb(null, { alertArticle: false , articleLink: articleLink});
               } else {
                 if (stdout) {
                   var output = JSON.parse(stdout);
