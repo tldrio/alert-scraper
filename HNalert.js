@@ -16,12 +16,23 @@ exec('phantomjs lib/HNFrontpageScraper.js ' + patterns.join(' '), function (err,
     , toSend // array of the items which matches the pattern but which havent been sent yet
     //, matches = output.matches 
     , matches
-    , HNCommentPages = output.HNCommentPages;
+    , articlePages = output.articles
+    , HNCommentPages = output.HNCommentPages
+    , i
+    , articles = [];
+
+    for (i = 0; i < HNCommentPages.length; i += 1) {
+      articles.push({ articleLink: articlePages[i], HNCommentLink: HNCommentPages[i] });
+    };
 
     async.mapLimit(
-        HNCommentPages
+        articles
       , MAX_PHANTOM_PROCESS
-      , function(HNCommentLink, callback) {
+      , function(article, callback) {
+        var HNCommentLink = article.HNCommentLink
+          , articleLink = article.articleLink;
+
+        console.log('Processing', articleLink, HNCommentLink);
 
         exec('phantomjs lib/HNCommentPageScraper.js ' + HNCommentLink + ' ' + patterns.join(' '), function (err, stdout, stderr) {
           if (err) {
