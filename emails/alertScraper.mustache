@@ -1,9 +1,11 @@
-<div style="font-family: 'Comic Sans MS';">
+<div>
   Elements that triggered the alert for "{{#patterns}} {{.}} {{/patterns}}"<br>
-  
+
   <br> <br>
   {{#elements}}
-  - <a href="{{url}}">{{title}}</a> <br>
+
+  {{#alertComment}}
+  ☆<a href="{{url}}">{{title}}</a> <br>
     <span style="margin-left:20px;">In the following comments:  <span><br><br>
     {{#matches}}
     <div style="margin-left:40px;">
@@ -11,6 +13,14 @@
     </div>
     {{/matches}}
     <br> <br> <br>
+  {{/alertComment}}
+
+  {{#alertArticle}}
+  ★ <a href="{{articleLink}}">{{title}}</a> <br>
+    This article contains probably a summary.
+  <br> <br> <br>
+  {{/alertArticle}}
+
   {{/elements}}
 </div>
 

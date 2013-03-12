@@ -5,7 +5,7 @@ var exec = require('child_process').exec
   , async = require('async')
   , mailer = require('./lib/mailer')
   , storage = require('./lib/storage.js')
-  , patterns = ['summary', 'tldr', 'tl.dr'] // patterns should be escaped for Regex usage
+  , patterns = ['summary', 'tldr', 'tl.dr', 'short.version'] // patterns should be escaped for Regex usage
   , MAX_PHANTOM_PROCESS = 5;
 
 exec('phantomjs lib/HNFrontpageScraper.js ' + patterns.join(' '), function (err, stdout, stderr) {
@@ -14,7 +14,7 @@ exec('phantomjs lib/HNFrontpageScraper.js ' + patterns.join(' '), function (err,
     , options
     , valuesToSend = [] // data needed for the email templating
     , toSend // array of the items which matches the pattern but which havent been sent yet
-    //, matches = output.matches 
+    //, matches = output.matches
     , matches
     , articlePages = output.articles
     , HNCommentPages = output.HNCommentPages
@@ -34,16 +34,46 @@ exec('phantomjs lib/HNFrontpageScraper.js ' + patterns.join(' '), function (err,
 
         console.log('Processing', articleLink, HNCommentLink);
 
-        exec('phantomjs lib/HNCommentPageScraper.js ' + HNCommentLink + ' ' + patterns.join(' '), function (err, stdout, stderr) {
+        async.series([
+          function(cb){
+            cb(null, { alertComment: true });
+            exec('phantomjs lib/HNCommentPageScraper.js ' + HNCommentLink + ' ' + patterns.join(' '), function (err, stdout, stderr) {
+              if (err) {
+                console.log('[CommentPage] STDOUT', stdout, 'stderr', stderr, err);
+                cb(err);
+              } else {
+                var output = JSON.parse(stdout);
+                console.log('Done Comments', output.title);
+                cb(null, output);
+              }
+            });
+          },
+          function(cb){
+            exec('phantomjs lib/basicPageScraper.js ' + articleLink + ' ' + patterns.join(' '), function (err, stdout, stderr) {
+              if (err) {
+                console.log('[Article Page] STDOUT', stdout, 'stderr', stderr, err);
+                cb(err);
+              } else {
+                if (stdout) {
+                  var output = JSON.parse(stdout);
+                  console.log('Done article', articleLink);
+                  cb(null, output);
+                } else {
+                  cb(null, { alertArticle: false , articleLink: articleLink});
+                }
+              }
+            });
+          }
+        ],
+        function(err, results){
           if (err) {
-            console.log('STDOUT', stdout, 'stderr', stderr, err);
             callback(err);
           } else {
-            var output = JSON.parse(stdout);
-            console.log('Done', output.title);
-            callback(null, output);
+            callback(null, _.extend({},results[0],results[1]));
           }
         });
+
+
       }
       , function callback(err, results) {
 
@@ -52,7 +82,7 @@ exec('phantomjs lib/HNFrontpageScraper.js ' + patterns.join(' '), function (err,
           process.exit(0);
         }
         // Filter results that triggered the alert
-        matches = _.filter(results, function (result) { return result.alert; });
+        matches = _.filter(results, function (result) { return result.alertComment || result.alertArticle; });
         console.log('Matches', matches);
         storage.getKeys(function (err, replies) {
           if (err) {
@@ -71,6 +101,7 @@ exec('phantomjs lib/HNFrontpageScraper.js ' + patterns.join(' '), function (err,
             if (toSend.length) {
               options = { values: { elements: valuesToSend
                                   , patterns: patterns }
+                        , to: 'hello+test@tldr.io'
                         , type: 'alertScraper' };
 
               // Send mail
