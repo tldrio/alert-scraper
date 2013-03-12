@@ -36,7 +36,6 @@ exec('phantomjs lib/HNFrontpageScraper.js ' + patterns.join(' '), function (err,
 
         async.series([
           function(cb){
-            cb(null, { alertComment: true });
             exec('phantomjs lib/HNCommentPageScraper.js ' + HNCommentLink + ' ' + patterns.join(' '), function (err, stdout, stderr) {
               if (err) {
                 console.log('[CommentPage] STDOUT', stdout, 'stderr', stderr, err);
