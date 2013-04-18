@@ -4,7 +4,7 @@ var request = require('request')
 
 request.get({ url: 'https://news.ycombinator.com/' }, function (err, res, body) {
   var $ = cheerio.load(body)
-    , $links = $('a')
+    , $links = $('td.title a')
     , i
     ;
 
