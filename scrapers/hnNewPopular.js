@@ -5,7 +5,7 @@ var request = require('request')
   , globals = require('../lib/globals')
   , mailer = require('../lib/mailer')
   , maxRank = 10
-  , maxComments = 60
+  , maxComments = 6
   , minWords = 500
   ;
 
