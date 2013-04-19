@@ -12,32 +12,43 @@ function getNumberOfComment (s) {
     return 0;
   } else {
     return res;
+  }
 }
-  }
 
 
-request.get({ url: 'https://news.ycombinator.com/' }, function (err, res, body) {
-  var $ = cheerio.load(body)
-    , $links = $('td.title a')
-    , $link, $comment
-    , items = []
-    , i
-    ;
+/**
+ * Get all links on the frontpage with their rank and number of comments
+ */
+function getFrontpageLinks (callback) {
+  request.get({ url: 'https://news.ycombinator.com/' }, function (err, res, body) {
+    if (err) { return callback(err); }
 
-  for (i = 0; i < 30; i += 1) {
-    $link = $($links[i]);
-    $comment = $link.parent().parent().next().find('a:nth-child(3)');
+    var $ = cheerio.load(body)
+      , $links = $('td.title a')
+      , $link, $comment
+      , items = []
+      , i
+      ;
 
-    if ($comment.html()) {
-      items.push({ number: i
-                 , link: $link.attr('href')
-                 , comments: getNumberOfComment($comment.html())
-                 });
+    for (i = 0; i < 30; i += 1) {
+      $link = $($links[i]);
+      $comment = $link.parent().parent().next().find('a:nth-child(3)');
+
+      if ($comment.html()) {
+        items.push({ rank: i
+                   , link: $link.attr('href')
+                   , comments: getNumberOfComment($comment.html())
+                   });
+      }
     }
-  }
+
+    return callback(null, items);
+  })
+}
 
 
-  console.log(items);
 
 
-})
+
+
+
