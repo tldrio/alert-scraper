@@ -125,8 +125,10 @@ function getPromisingArticles (callback) {
  * Actually launch a round of analysis
  */
 function launchRound() {
+  console.log({ level: 20, message: 'Launch the HN new popular scraper' });
   getPromisingArticles(function (err, items) {
     items.forEach(function (i) {
+      console.log({ level: 30, message: '[HN new popular] Sent alert for url ' + i.url });
       mailer.sendMail({ type: 'hnNewPopular', values: i });
     });
   });
