@@ -8,6 +8,5 @@ var hnNewPopular = require('./scrapers/hnNewPopular');
 
 // Check HN every 15 minutes
 setInterval(hnNewPopular.launchRound, 15 * 60000);
-
-
+//hnNewPopular.launchRound();
 

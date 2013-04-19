@@ -5,7 +5,7 @@ var request = require('request')
   , globals = require('../lib/globals')
   , mailer = require('../lib/mailer')
   , maxRank = 10
-  , maxComments = 6
+  , maxComments = 60
   , minWords = 500
   ;
 
@@ -69,6 +69,7 @@ function getFrontpageLinks (callback) {
       if ($comment.html()) {
         items.push({ rank: i
                    , url: $link.attr('href')
+                   , title: $link.html()
                    , comments: getNumberOfComment($comment.html())
                    });
       }
@@ -77,7 +78,6 @@ function getFrontpageLinks (callback) {
     return callback(null, items);
   })
 }
-
 
 /**
  * Get the promising articles
