@@ -4,8 +4,8 @@ var request = require('request')
   , _ = require('underscore')
   , globals = require('../lib/globals')
   , mailer = require('../lib/mailer')
-  , maxRank = 10
-  , maxComments = 6
+  , maxRank = 5
+  , maxComments = 5
   , minWords = 500
   ;
 
