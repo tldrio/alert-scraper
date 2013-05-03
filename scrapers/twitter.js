@@ -3,14 +3,13 @@ var request = require('request')
   , async = require('async')
   , _ = require('underscore')
   , execTime = require('exec-time')
+  , profiler = new execTime('Twitter get profile')
   ;
 
 
 
 function getProfile (callback) {
-  var profiler = execTime('Twitter get profile');
-
-  profiler('Begin');
+  profiler.beginProfiling();
 
   request.get({ url: 'https://twitter.com/louischatriot' }, function (err, res, body) {
     var $
@@ -19,14 +18,15 @@ function getProfile (callback) {
 
     if (err) { return callback(err); }
 
-    profiler('Requested content', true);
+    profiler.step('Requested content');
+    profiler.resetTimers();
     $ = cheerio.load(body);
-    profiler('Loaded HTML with cheerio');
+    profiler.step('Loaded HTML with cheerio');
 
     tweets = $('a[data-element-term="tweet_stats"]').find('strong').html();
     console.log(tweets + " tweets");
 
-    profiler('Extracted number of tweets');
+    profiler.step('Extracted number of tweets');
 
     return callback(null);
   })
