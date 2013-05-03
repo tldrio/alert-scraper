@@ -11,7 +11,8 @@
     "underscore": "~1.4.3",
     "async": "~0.2.5",
     "request": "~2.16.6",
-    "cheerio": "~0.10.8"
+    "cheerio": "~0.10.8",
+    "exec-time": "0.0.1"
   },
   "engines": {
     "node": "0.8.x",
